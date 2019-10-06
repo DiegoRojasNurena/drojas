@@ -1,0 +1,55 @@
+
+```{r}
+library(htmltab)
+library(openxlsx)
+library(rio)
+library(magrittr)
+library(dplyr)
+library(tidyr)
+library(factoextra)
+library(cluster)
+set.seed(123)
+
+linkafrica = "https://github.com/DiegoRojasNurena/drojas/raw/master/A-E_2004-2018-ADF-Data-EN.xls"
+africagovernanza = import(linkafrica)
+
+na.omit(africagovernanza$Country)
+africagovernanza$"2017" = NULL
+africagovernanza$Code = NULL
+africagovernanza$Indicator = NULL
+africagovernanza[!is.na(africagovernanza)]
+africagovernanza1 = africagovernanza [-c(38,39),]
+
+row.names(africagovernanza1) = africagovernanza1$Country
+
+str(africagovernanza1)
+
+inputgover = africagovernanza1 [,c(2:15)]
+
+g.dist =daisy(inputgover, metric= "gower")
+
+
+
+```
+
+```{r}
+fviz_nbclust(inputgover, pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+```{r}
+fviz_nbclust(inputgover, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+```{r}
+res.pam = pam(g.dist,2,cluster.only = F)
+res.agnes = hcut(g.dist, k = 2,hc_func='agnes',hc_method = "ward.D")
+res.diana = hcut(g.dist, k = 2,hc_func='diana')
+```
+```{r}
+fviz_silhouette(res.pam)
+```
+```{r}
+fviz_silhouette(res.agnes)
+```
+```{r}
+fviz_silhouette(res.diana)
+```
+
