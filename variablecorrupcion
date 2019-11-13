@@ -1,0 +1,80 @@
+Variable 3: Corrupción, Fuente: Transparencia Internacional
+```{r}
+library(rio)
+library(magrittr)
+library(fpc)
+library(factoextra)
+library(kableExtra)
+library(polycor)
+library(stringr)
+library(ggplot2)
+library(psych)
+library(knitr)
+library(VIM)
+library(mice)
+```
+
+```{r}
+set.seed(2019)
+```
+
+
+```{r}
+link = 'https://github.com/DiegoRojasNurena/drojas/raw/master/mydata.xlsx'
+
+corrupafrica = import(link)
+```
+
+```{r}
+corrupafrica$...1 = NULL
+```
+
+```{r}
+str(corrupafrica)
+```
+
+#IMPUTAR
+
+```{r}
+corrupafrica$TempC = apply(corrupafrica[ ,c(2,3)], 1, mean, na.rm = TRUE)
+```
+
+#SUBIMOS DATA IMPUTADA
+
+```{r}
+lank = 'https://github.com/DiegoRojasNurena/drojas/raw/master/DataImputada%20Corrupci%C3%B3n%20en%20Africa.xlsx'
+
+inputdata = import(lank)
+```
+
+```{r}
+inputdata$...1 = NULL
+row.names(inputdata) = inputdata$Pais
+```
+
+```{r}
+data = inputdata[,-c(1)]
+corMatrix=polycor::hetcor(data)$correlations
+```
+
+```{r}
+library(psych)
+psych::KMO(corMatrix) 
+```
+
+```{r}
+fa.parallel(data,fm = 'ML', fa = 'fa')
+```
+```{r}
+library(GPArotation)
+resfa = fa(data,nfactors = 1, cor = 'mixed',rotate = "varimax",fm="minres")
+```
+
+```{r}
+as.data.frame(resfa$scores)
+```
+
+```{r}
+datafactor=cbind(data[1],as.data.frame(resfa$scores))
+```
+
