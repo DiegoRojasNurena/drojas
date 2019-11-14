@@ -1,0 +1,47 @@
+Variable 3: Corrupción, Fuente: Transparencia Internacional
+```{r}
+library(rio)
+library(magrittr)
+library(fpc)
+library(factoextra)
+library(kableExtra)
+library(polycor)
+library(stringr)
+library(ggplot2)
+library(psych)
+library(knitr)
+library(VIM)
+library(mice)
+```
+
+```{r}
+link1 = 'https://github.com/DiegoRojasNurena/drojas/raw/master/2008.xlsx'
+link2 = 'https://github.com/DiegoRojasNurena/drojas/raw/master/2009.xlsx'
+link3 = 'https://github.com/DiegoRojasNurena/drojas/raw/master/2010.xlsx'
+link4 = 'https://github.com/DiegoRojasNurena/drojas/raw/master/2011.xlsx'
+link5 = 'https://github.com/DiegoRojasNurena/drojas/raw/master/2012.xlsx'
+link6 = 'https://github.com/DiegoRojasNurena/drojas/raw/master/2013%20y%202015.xlsx'
+```
+
+```{r}
+d2008 = import(link1)
+d2009 = import(link2)
+d2010 = import(link3)
+d2011 = import(link4)
+d2012 = import(link5)
+d2013y2015 = import(link6)
+```
+```{r}
+d2013y2015$...1 = NULL
+```
+
+```{r}
+Corrup=cbind(d2010,d2011,d2012,d2013y2015)
+
+Corrupción = Corrup[,c(1,2,4,6,8,9,10)]
+```
+
+```{r}
+Corrupción$'Corrupcion' = apply(Corrupción[ ,c(2:7)], 1, mean, na.rm = TRUE)
+```
+
